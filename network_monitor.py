@@ -161,8 +161,11 @@ def generate_report(traffic_data, fault_accuracy, congestion_mse, path, cost):
 # Streamlit UI
 # ============================
 
-st.title("🌐 Real-Time Network Monitoring & Fault Prediction")
+st.title("🌐 Real-Time Network Fault & Congestion Prediction using Dijkstra's Algorithm with Machine Learning")
 
+# Display the metrics above the plot
+st.markdown(f"**Fault Prediction Accuracy:** {predictive_analytics.fault_accuracy:.2f}")
+st.markdown(f"**Congestion Prediction MSE:** {predictive_analytics.congestion_mse:.2f}")
 # Fetch real-time network metrics
 st.sidebar.header("📡 Real-Time Data")
 if st.sidebar.button("Fetch Metrics"):
