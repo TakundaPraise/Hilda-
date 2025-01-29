@@ -197,13 +197,28 @@ end_node = st.sidebar.selectbox("End Node", nodes)
 if st.sidebar.button("Generate Report"):
     ml_dijkstra = MLEnhancedDijkstra(network, predictive_analytics)
     path, cost = ml_dijkstra.shortest_path(start_node, end_node)
-    if path:  # Check if path is found
-        st.sidebar.write(f"🔹 Shortest Path: {' → '.join(path)}")
-        st.sidebar.write(f"💰 Total Cost: {cost:.2f}")
+    # Trigger report generation only if valid path is found
+    if path and cost:
+        st.write("Generating report...")
         report_buffer = generate_report(traffic_data, predictive_analytics.fault_accuracy, predictive_analytics.congestion_mse, path, cost)
-        st.download_button("Download Report", data=report_buffer, file_name="network_performance_report.pdf", mime="application/pdf")
+        st.download_button("Download Report", data=report_buffer, file_name="network_report.pdf")
     else:
         st.sidebar.error("No path found!")
+    #if path:  # Check if path is found
+        #st.sidebar.write(f"🔹 Shortest Path: {' → '.join(path)}")
+        #st.sidebar.write(f"💰 Total Cost: {cost:.2f}")
+        #report_buffer = generate_report(traffic_data, predictive_analytics.fault_accuracy, predictive_analytics.congestion_mse, path, cost)
+        #st.download_button("Download Report", data=report_buffer, file_name="network_performance_report.pdf", mime="application/pdf")
+   # else:
+        #st.sidebar.error("No path found!")
+
+# Trigger report generation only if valid path is found
+if path and cost:
+    st.write("Generating report...")
+    report_buffer = generate_report(traffic_data, predictive_analytics.fault_accuracy, predictive_analytics.congestion_mse, path, cost)
+    st.download_button("Download Report", data=report_buffer, file_name="network_report.pdf")
+else:
+    st.sidebar.error("No path found!")
 
 # Traffic Visualization
 st.subheader("📊 Network Traffic Overview")
