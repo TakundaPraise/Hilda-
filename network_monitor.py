@@ -214,13 +214,6 @@ if st.sidebar.button("Generate Report"):
    # else:
         #st.sidebar.error("No path found!")
 
-# Trigger report generation only if valid path is found
-if path and cost:
-    st.write("Generating report...")
-    report_buffer = generate_report(traffic_data, predictive_analytics.fault_accuracy, predictive_analytics.congestion_mse, path, cost)
-    st.download_button("Download Report", data=report_buffer, file_name="network_report.pdf")
-else:
-    st.sidebar.error("No path found!")
 
 # Traffic Visualization
 st.subheader("📊 Network Traffic Overview")
