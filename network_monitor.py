@@ -186,19 +186,20 @@ traffic_data = network.generate_traffic_data()
 # Train ML models
 predictive_analytics = PredictiveAnalytics(traffic_data)
 
-# Variables to store path and cost
-path = None
-cost = None
-
-# Path Calculation
+# Path Calculation (will be recalculated when generating the report)
 start_node = st.sidebar.selectbox("Start Node", nodes)
 end_node = st.sidebar.selectbox("End Node", nodes)
 
-if st.sidebar.button("Find Shortest Path"):
+if st.sidebar.button("Generate Report"):
     ml_dijkstra = MLEnhancedDijkstra(network, predictive_analytics)
     path, cost = ml_dijkstra.shortest_path(start_node, end_node)
-    st.sidebar.write(f"🔹 Shortest Path: {' → '.join(path)}")
-    st.sidebar.write(f"💰 Total Cost: {cost:.2f}")
+    if path:  # Check if path is found
+        st.sidebar.write(f"🔹 Shortest Path: {' → '.join(path)}")
+        st.sidebar.write(f"💰 Total Cost: {cost:.2f}")
+        report_buffer = generate_report(traffic_data, predictive_analytics.fault_accuracy, predictive_analytics.congestion_mse, path, cost)
+        st.download_button("Download Report", data=report_buffer, file_name="network_performance_report.pdf", mime="application/pdf")
+    else:
+        st.sidebar.error("No path found!")
 
 # Traffic Visualization
 st.subheader("📊 Network Traffic Overview")
@@ -206,10 +207,5 @@ fig = go.Figure()
 fig.add_trace(go.Scatter(x=traffic_data["node"], y=traffic_data["load"], mode='markers', name='Load'))
 fig.add_trace(go.Scatter(x=traffic_data["node"], y=traffic_data["congestion"], mode='lines', name='Congestion'))
 st.plotly_chart(fig)
-
-# Generate Report Button
-if st.sidebar.button("Generate Report") and path is not None and cost is not None:
-    report_buffer = generate_report(traffic_data, predictive_analytics.fault_accuracy, predictive_analytics.congestion_mse, path, cost)
-    st.download_button("Download Report", data=report_buffer, file_name="network_performance_report.pdf", mime="application/pdf")
 
 st.info("🚀 Use the sidebar to fetch metrics & compute shortest paths.")
