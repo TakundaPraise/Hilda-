@@ -144,7 +144,8 @@ def generate_report(traffic_data, fault_accuracy, congestion_mse, path, cost):
         pdf.cell(200, 10, txt=f"Node: {row['node']} | Neighbor: {row['neighbor']} | Load: {row['load']} | Congestion: {row['congestion']}", ln=True)
 
     # Path and Cost
-    pdf.cell(200, 10, txt=f"Shortest Path: {' → '.join(path)}", ln=True)
+    path_str = ' -> '.join(path)  # Replacing → with ->
+    pdf.cell(200, 10, txt=f"Shortest Path: {path_str}", ln=True)
     pdf.cell(200, 10, txt=f"Total Cost: {cost:.2f}", ln=True)
 
     # Save PDF to buffer
@@ -152,6 +153,7 @@ def generate_report(traffic_data, fault_accuracy, congestion_mse, path, cost):
     pdf.output(buffer)
     buffer.seek(0)
     return buffer
+
 
 # ============================
 # Streamlit UI
