@@ -152,9 +152,9 @@ def generate_report(traffic_data, fault_accuracy, congestion_mse, path, cost):
 
     # Save PDF to buffer
     buffer = BytesIO()
-    pdf.output(dest='S')  # 'S' means output to string, which you can then use as BytesIO
-    buffer.write(pdf.output(dest='S').encode('latin1'))  # Write the output directly into the buffer
-    buffer.seek(0)
+    pdf_output = pdf.output(dest='S')  # Output to string (bytes)
+    buffer.write(pdf_output.encode('latin1'))  # Writing the output to the buffer
+    buffer.seek(0)  # Rewind buffer to the beginning
     return buffer
 
 # ============================
@@ -203,6 +203,7 @@ if st.sidebar.button("Generate Report"):
         st.sidebar.write(f"🔹 Shortest Path: {' → '.join(path)}")
         st.sidebar.write(f"💰 Total Cost: {cost:.2f}")
         report_buffer = generate_report(traffic_data, predictive_analytics.fault_accuracy, predictive_analytics.congestion_mse, path, cost)
+        st.write(f"Report Buffer Size: {len(report_buffer.getvalue())} bytes")  # Debugging the buffer size
         st.download_button("Download Report", data=report_buffer, file_name="network_report.pdf", mime="application/pdf")
     else:
         st.sidebar.error("No path found!")
