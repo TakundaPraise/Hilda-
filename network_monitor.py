@@ -1,3 +1,4 @@
+pip install -r setup_requirements.txt
 
 import streamlit as st
 import requests
