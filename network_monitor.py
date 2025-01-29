@@ -1,5 +1,3 @@
-#pip install --upgrade pip
-#pip install requirements.txt
 import streamlit as st
 import requests
 import json
@@ -12,6 +10,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, mean_squared_error
 import heapq
 import time
+from fpdf import FPDF  # For PDF report generation
 
 # ============================
 # Data Collection from Prometheus
@@ -72,12 +71,12 @@ class PredictiveAnalytics:
         X_train, X_test, y_train, y_test = train_test_split(X, y_fault, test_size=0.2, random_state=42)
         self.fault_model = RandomForestClassifier()
         self.fault_model.fit(X_train, y_train)
-        st.write(f"Fault Prediction Accuracy: {accuracy_score(y_test, self.fault_model.predict(X_test)):.2f}")
+        self.fault_accuracy = accuracy_score(y_test, self.fault_model.predict(X_test))
 
         X_train, X_test, y_train, y_test = train_test_split(X, y_congestion, test_size=0.2, random_state=42)
         self.congestion_model = GradientBoostingRegressor()
         self.congestion_model.fit(X_train, y_train)
-        st.write(f"Congestion Prediction MSE: {mean_squared_error(y_test, self.congestion_model.predict(X_test)):.2f}")
+        self.congestion_mse = mean_squared_error(y_test, self.congestion_model.predict(X_test))
 
         self.cluster_model = KMeans(n_clusters=2, random_state=42)
         self.cluster_model.fit(X)
@@ -121,6 +120,37 @@ class MLEnhancedDijkstra:
                     heapq.heappush(pq, (cost + adjusted_weight, neighbor, path))
 
         return [], float('inf')
+
+# ============================
+# Report Generation (PDF)
+# ============================
+
+def generate_report(traffic_data, fault_accuracy, congestion_mse, path, cost):
+    pdf = FPDF()
+    pdf.add_page()
+    pdf.set_font("Arial", size=12)
+    
+    # Title
+    pdf.cell(200, 10, txt="Network Performance Report", ln=True, align='C')
+
+    # Fault Prediction Accuracy and Congestion MSE
+    pdf.cell(200, 10, txt=f"Fault Prediction Accuracy: {fault_accuracy:.2f}", ln=True)
+    pdf.cell(200, 10, txt=f"Congestion Prediction MSE: {congestion_mse:.2f}", ln=True)
+
+    # Traffic Data Summary
+    pdf.cell(200, 10, txt="Traffic Data Summary:", ln=True)
+    for idx, row in traffic_data.iterrows():
+        pdf.cell(200, 10, txt=f"Node: {row['node']} | Neighbor: {row['neighbor']} | Load: {row['load']} | Congestion: {row['congestion']}", ln=True)
+
+    # Path and Cost
+    pdf.cell(200, 10, txt=f"Shortest Path: {' → '.join(path)}", ln=True)
+    pdf.cell(200, 10, txt=f"Total Cost: {cost:.2f}", ln=True)
+
+    # Save PDF to buffer
+    buffer = BytesIO()
+    pdf.output(buffer)
+    buffer.seek(0)
+    return buffer
 
 # ============================
 # Streamlit UI
@@ -172,5 +202,9 @@ fig.add_trace(go.Scatter(x=traffic_data["node"], y=traffic_data["load"], mode='m
 fig.add_trace(go.Scatter(x=traffic_data["node"], y=traffic_data["congestion"], mode='lines', name='Congestion'))
 st.plotly_chart(fig)
 
-st.info("🚀 Use the sidebar to fetch metrics & compute shortest paths.")
+# Generate Report Button
+if st.sidebar.button("Generate Report"):
+    report_buffer = generate_report(traffic_data, predictive_analytics.fault_accuracy, predictive_analytics.congestion_mse, path, cost)
+    st.download_button("Download Report", data=report_buffer, file_name="network_performance_report.pdf", mime="application/pdf")
 
+st.info("🚀 Use the sidebar to fetch metrics & compute shortest paths.")
