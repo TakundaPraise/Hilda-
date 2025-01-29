@@ -161,11 +161,8 @@ def generate_report(traffic_data, fault_accuracy, congestion_mse, path, cost):
 # Streamlit UI
 # ============================
 
-st.title("🌐 Real-Time Network Fault & Congestion Prediction using Dijkstra's Algorithm with Machine Learning")
+st.title("🌐 Real-Time Network Fault & Congestion Prediction using Dijkstra's Algorithm ")
 
-# Display the metrics above the plot
-st.markdown(f"**Fault Prediction Accuracy:** {fault_accuracy:.2f}")
-st.markdown(f"**Congestion Prediction MSE:** {congestion_mse:.2f}")
 
 # Fetch real-time network metrics
 st.sidebar.header("📡 Real-Time Data")
@@ -227,4 +224,4 @@ fig.add_trace(go.Scatter(x=traffic_data["node"], y=traffic_data["load"], mode='m
 fig.add_trace(go.Scatter(x=traffic_data["node"], y=traffic_data["congestion"], mode='lines', name='Congestion'))
 st.plotly_chart(fig)
 
-st.info("🚀 Use the sidebar to fetch metrics & compute shortest paths.")
+st.info("🚀 Use the sidebar to fetch metrics, report & compute shortest paths.")
