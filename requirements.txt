@@ -1,4 +1,3 @@
-pip --upgrade
 streamlit
 requests
 numpy
