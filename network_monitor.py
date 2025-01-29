@@ -10,7 +10,8 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, mean_squared_error
 import heapq
 import time
-from fpdf import FPDF  # For PDF report generation
+from fpdf import FPDF
+from io import BytesIO  # For report buffer
 
 # ============================
 # Data Collection from Prometheus
@@ -185,6 +186,10 @@ traffic_data = network.generate_traffic_data()
 # Train ML models
 predictive_analytics = PredictiveAnalytics(traffic_data)
 
+# Variables to store path and cost
+path = None
+cost = None
+
 # Path Calculation
 start_node = st.sidebar.selectbox("Start Node", nodes)
 end_node = st.sidebar.selectbox("End Node", nodes)
@@ -203,7 +208,7 @@ fig.add_trace(go.Scatter(x=traffic_data["node"], y=traffic_data["congestion"], m
 st.plotly_chart(fig)
 
 # Generate Report Button
-if st.sidebar.button("Generate Report"):
+if st.sidebar.button("Generate Report") and path is not None and cost is not None:
     report_buffer = generate_report(traffic_data, predictive_analytics.fault_accuracy, predictive_analytics.congestion_mse, path, cost)
     st.download_button("Download Report", data=report_buffer, file_name="network_performance_report.pdf", mime="application/pdf")
 
