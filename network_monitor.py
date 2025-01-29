@@ -13,6 +13,7 @@ import time
 from fpdf import FPDF
 from io import BytesIO  # For report buffer
 
+
 # ============================
 # Data Collection from Prometheus
 # ============================
@@ -126,11 +127,12 @@ class MLEnhancedDijkstra:
 # Report Generation (PDF)
 # ============================
 
+
 def generate_report(traffic_data, fault_accuracy, congestion_mse, path, cost):
     pdf = FPDF()
     pdf.add_page()
     pdf.set_font("Arial", size=12)
-    
+
     # Title
     pdf.cell(200, 10, txt="Network Performance Report", ln=True, align='C')
 
@@ -150,10 +152,10 @@ def generate_report(traffic_data, fault_accuracy, congestion_mse, path, cost):
 
     # Save PDF to buffer
     buffer = BytesIO()
-    pdf.output(buffer)
+    pdf.output(dest='S')  # 'S' means output to string, which you can then use as BytesIO
+    buffer.write(pdf.output(dest='S').encode('latin1'))  # Write the output directly into the buffer
     buffer.seek(0)
     return buffer
-
 
 # ============================
 # Streamlit UI
