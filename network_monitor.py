@@ -1,5 +1,5 @@
-pip install --upgrade pip
-pip install requirements.txt
+#pip install --upgrade pip
+#pip install requirements.txt
 import streamlit as st
 import requests
 import json
