@@ -200,8 +200,10 @@ if st.sidebar.button("Generate Report"):
     # Trigger report generation only if valid path is found
     if path and cost:
         st.write("Generating report...")
+        st.sidebar.write(f"🔹 Shortest Path: {' → '.join(path)}")
+        st.sidebar.write(f"💰 Total Cost: {cost:.2f}")
         report_buffer = generate_report(traffic_data, predictive_analytics.fault_accuracy, predictive_analytics.congestion_mse, path, cost)
-        st.download_button("Download Report", data=report_buffer, file_name="network_report.pdf")
+        st.download_button("Download Report", data=report_buffer, file_name="network_report.pdf", mime="application/pdf")
     else:
         st.sidebar.error("No path found!")
     #if path:  # Check if path is found
